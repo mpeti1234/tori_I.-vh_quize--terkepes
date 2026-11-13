@@ -1,1 +1,0 @@
-# tori_I.-vh_quize--terkepes
