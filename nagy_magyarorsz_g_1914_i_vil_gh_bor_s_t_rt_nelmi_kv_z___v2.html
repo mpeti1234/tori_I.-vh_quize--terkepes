@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nagy-Magyarország 1914 – Az I. világháború előzményei és kitörése</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cinzel, Lora és Inter a korabeli térképészeti hangulathoz -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Cinzel', 'serif'],
+            serif: ['Lora', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            parchment: {
+              50: '#fcf9f2',
+              100: '#f6eedc',
+              200: '#ead9b7',
+              300: '#dcc18e',
+              400: '#c7a263',
+              800: '#4a3520',
+              900: '#2e1f11',
+            },
+            imperial: {
+              navy: '#1b2e42',
+              burgundy: '#7a1c24',
+              gold: '#b8860b',
+              brass: '#c99a2e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Korabeli pergamen háttér és egyedi animációk */
+    body {
+      background-color: #efe2c6;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 250, 238, 0.75) 0%, transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(199, 162, 99, 0.25) 0%, transparent 60%),
+        repeating-linear-gradient(0deg, rgba(74, 53, 32, 0.025) 0px, rgba(74, 53, 32, 0.025) 1px, transparent 1px, transparent 4px);
+      color: #2e1f11;
+      overflow-x: hidden;
+    }
+
+    /* Térkép jelzőtű pulzálás megválaszolatlan városoknál */
+    @keyframes pinPulse {
+      0% {
+        transform: scale(0.85);
+        opacity: 0.85;
+      }
+      70% {
+        transform: scale(2.15);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(2.15);
+        opacity: 0;
+      }
+    }
+
+    .pin-pulse-ring {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pinPulse 2.3s infinite ease-out;
+    }
+
+    /* Térkép jelzőtű interakció: a külső .city-pin SOHA nem kap CSS transform-ot, így nem írja felül az SVG translate(x, y) pozíciót */
+    .city-pin {
+      cursor: pointer;
+    }
+
+    .city-pin:focus-visible {
+      outline: none;
+    }
+
+    .city-pin .pin-visual {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-box: fill-box;
+      transform-origin: center bottom;
+    }
+
+    .city-pin:hover .pin-visual,
+    .city-pin:focus-visible .pin-visual {
+      transform: scale(1.12);
+    }
+
+    .city-pin:hover .city-label-bg,
+    .city-pin:focus-visible .city-label-bg {
+      fill: #1b2e42;
+      stroke: #facc15;
+    }
+
+    .city-pin:hover .city-label-text,
+    .city-pin:focus-visible .city-label-text {
+      fill: #fcf9f2;
+    }
+
+    /* Finom térkép keret árnyék */
+    .map-frame {
+      box-shadow:
+        0 18px 40px -12px rgba(46, 31, 17, 0.35),
+        inset 0 0 0 2px rgba(184, 134, 11, 0.45);
+    }
+
+    /* Modális ablak animáció */
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-animate {
+      animation: modalFadeIn 0.25s ease-out forwards;
+    }
+
+    /* Egyedi görgetősáv */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ead9b7;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #9c7a44;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7a5c2e;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-amber-800 selection:text-amber-50">
+
+  <!-- Felső irányítópult / Fejléc -->
+  <header class="sticky top-0 z-30 bg-[#23170d]/95 backdrop-blur-md text-parchment-50 border-b-2 border-amber-600/60 shadow-lg">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Cím és korszak jelvény -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-500 to-amber-800 flex items-center justify-center shadow-inner border border-amber-300/40 shrink-0">
+          <!-- Korona / Iránytű embléma -->
+          <svg class="w-6 h-6 text-parchment-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="9" />
+            <polygon points="12 6 14.5 11.5 12 18 9.5 11.5 12 6" fill="currentColor" />
+            <circle cx="12" cy="12" r="1.5" fill="#23170d" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-display text-base sm:text-xl font-bold tracking-wide text-amber-200 leading-tight">
+              NAGY-MAGYARORSZÁG 1914
+            </h1>
+            <span class="hidden md:inline-block text-[11px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-red-900/80 text-amber-100 border border-amber-500/30 font-semibold">
+              11. osztályos történelem
+            </span>
+          </div>
+          <p class="font-serif italic text-xs sm:text-sm text-parchment-200/90">
+            Az I. világháború előzményei, okai és kitörése – Térképes társasjáték
+          </p>
+        </div>
+      </div>
+
+      <!-- Állapotjelzők és gombok -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 ml-auto">
+        <!-- Haladás számláló -->
+        <div class="flex items-center gap-2 bg-parchment-900/90 border border-amber-500/40 rounded-xl px-3 py-1.5">
+          <div id="progressText" class="font-display font-bold text-xs sm:text-sm text-amber-300">0/12 megválaszolva</div>
+          <div class="w-14 sm:w-20 h-2 bg-stone-800 rounded-full overflow-hidden hidden sm:block">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-yellow-400 to-green-500 transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Pontszám -->
+        <div class="flex items-center gap-1.5 bg-parchment-900/90 border border-amber-500/40 rounded-xl px-3 py-1.5">
+          <span class="text-xs text-parchment-300">Pont:</span>
+          <span id="scoreText" class="font-display font-bold text-sm sm:text-base text-green-400">0</span>
+        </div>
+
+        <!-- Véletlen város gomb -->
+        <button
+          id="randomCityBtn"
+          type="button"
+          onclick="openRandomUnansweredCity()"
+          title="Ugrás egy véletlenszerű megválaszolatlan városra"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#facc15] hover:bg-yellow-300 active:scale-95 text-stone-950 font-semibold text-xs sm:text-sm shadow transition cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+          <span>Következő célpont</span>
+        </button>
+
+        <!-- Újrakezdés gomb -->
+        <button
+          type="button"
+          onclick="restartGame()"
+          title="Kvíz újrakezdése az elejéről"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-amber-500/30 text-amber-100 font-medium text-xs sm:text-sm transition cursor-pointer"
+        >
+          <span>↻ Újrakezdés</span>
+        </button>
+
+        <!-- Hang effekt kapcsoló -->
+        <button
+          id="soundToggleBtn"
+          type="button"
+          onclick="toggleSound()"
+          title="Hangeffektek ki/bekapcsolása"
+          class="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-amber-500/30 text-amber-200 transition cursor-pointer"
+          aria-label="Hang kapcsoló"
+        >
+          <svg id="soundOnIcon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg id="soundOffIcon" class="w-4 h-4 hidden text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Összegzés gomb (csak ha mind a 12 kész) -->
+        <button
+          id="showSummaryHeaderBtn"
+          type="button"
+          onclick="openSummaryModal()"
+          class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-[#16a34a] hover:bg-green-500 text-white font-semibold text-xs sm:text-sm shadow transition cursor-pointer"
+        >
+          <span>Végeredmény</span>
+        </button>
+
+        <!-- Egyfájlos HTML letöltése -->
+        <button
+          type="button"
+          onclick="downloadSelfHtml()"
+          title="A teljes játék letöltése önálló HTML fájlként"
+          class="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-amber-500/30 text-amber-100 text-xs font-medium transition cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Mentés (.html)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Fő játéktér: Nagy-Magyarország térkép -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-6 py-3 sm:py-5 flex flex-col gap-3">
+    <!-- Rövid útmutató sáv -->
+    <div class="bg-parchment-100/90 border border-amber-800/25 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+      <p class="text-xs sm:text-sm text-parchment-900 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#facc15] border border-[#854d0e] text-[#422006] text-xs font-bold shrink-0">!</span>
+        <span>
+          Kattints a térképen pulzáló <strong>12 történelmi város jelzőtűjére</strong>, válaszolj az <strong>A, B, C, D</strong> kérdésekre, majd a végén nézd meg a részletes értékelést!
+        </span>
+      </p>
+      <!-- Jelmagyarázat -->
+      <div class="flex items-center gap-4 text-xs font-medium text-parchment-800">
+        <span class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-full bg-[#facc15] border border-[#854d0e] inline-block ring-2 ring-yellow-300/70"></span> Nyitott kérdés
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-full bg-[#16a34a] inline-block"></span> Helyes
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded-full bg-[#dc2626] inline-block"></span> Hibás
+        </span>
+      </div>
+    </div>
+
+    <!-- Térkép konténer -->
+    <div class="relative w-full rounded-2xl overflow-hidden border-4 border-[#5a3e24] bg-[#e5d1a8] map-frame">
+      <svg
+        id="hungaryMapSvg"
+        viewBox="0 0 1100 720"
+        class="w-full h-auto block select-none"
+        role="img"
+        aria-label="Történelmi Nagy-Magyarország térkép 1914 – Interaktív kvíz"
+      >
+        <defs>
+          <!-- Pergamen színátmenetek -->
+          <radialGradient id="parchmentSea" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#f3e6ca" />
+            <stop offset="70%" stop-color="#e3cfa6" />
+            <stop offset="100%" stop-color="#cfb482" />
+          </radialGradient>
+
+          <linearGradient id="hungaryLand" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fbf3e1" />
+            <stop offset="55%" stop-color="#f2e2c2" />
+            <stop offset="100%" stop-color="#e5ce9e" />
+          </linearGradient>
+
+          <linearGradient id="croatiaLand" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f4e6c8" />
+            <stop offset="100%" stop-color="#dfc391" />
+          </linearGradient>
+
+          <linearGradient id="adriaticWater" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#b9d0d6" />
+            <stop offset="100%" stop-color="#8fb1bd" />
+          </linearGradient>
+
+          <!-- Árnyék a térkép testére -->
+          <filter id="landShadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="3" dy="6" stdDeviation="6" flood-color="#3b2612" flood-opacity="0.28" />
+          </filter>
+
+          <!-- Jelzőtű árnyék -->
+          <filter id="pinShadow" x="-30%" y="-20%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#1a1007" flood-opacity="0.45" />
+          </filter>
+
+          <!-- Finom térkép rácsháló minta -->
+          <pattern id="mapGrid" width="80" height="80" patternUnits="userSpaceOnUse">
+            <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#8c6d46" stroke-width="0.6" stroke-opacity="0.22" />
+          </pattern>
+        </defs>
+
+        <!-- Háttér és rácsháló -->
+        <rect x="0" y="0" width="1100" height="720" fill="url(#parchmentSea)" />
+        <rect x="0" y="0" width="1100" height="720" fill="url(#mapGrid)" />
+
+        <!-- Szomszédos országok és birodalmak feliratai (1914-es állapot) -->
+        <g fill="#6e5438" font-family="Lora, serif" font-style="italic" font-size="16" opacity="0.72" letter-spacing="2">
+          <text x="85" y="135">OSZTRÁK CSÁSZÁRSÁG</text>
+          <text x="330" y="72">GALÍCIA (Osztrák Császárság)</text>
+          <text x="760" y="95">OROSZ BIRODALOM</text>
+          <text x="905" y="295">MOLDVA</text>
+          <text x="760" y="595">ROMÁN KIRÁLYSÁG (Havasalföld)</text>
+          <text x="465" y="645">SZERB KIRÁLYSÁG</text>
+          <text x="235" y="618">BOSZNIA-HERCEGOVINA</text>
+          <text x="175" y="655" font-size="13">(Osztrák–Magyar közös igazgatás)</text>
+        </g>
+
+        <!-- Adriai-tenger (délnyugati sarok) -->
+        <path
+          d="M 14 485 L 92 518 L 106 565 L 138 612 L 155 685 L 14 685 Z"
+          fill="url(#adriaticWater)"
+          stroke="#6b8f9c"
+          stroke-width="1.5"
+        />
+        <text x="26" y="635" fill="#2c4e5c" font-family="Lora, serif" font-style="italic" font-size="15" letter-spacing="1.5" transform="rotate(-18 45 635)">
+          ADRIAI-TENGER
+        </text>
+
+        <!-- NAGY-MAGYARORSZÁG FŐ TESTE (1914-es történeti határok) -->
+        <g filter="url(#landShadow)">
+          <!-- Magyarország (Magyar Királyság tulajdonképpeni területe) -->
+          <path
+            d="M 205 224
+               L 215 190 L 236 164 L 265 142 L 298 118 L 336 105 L 378 96
+               L 422 92 L 468 95 L 512 104 L 555 110 L 602 114 L 648 122
+               L 696 138 L 745 162 L 792 195 L 838 236 L 878 282 L 908 332
+               L 924 385 L 916 432 L 886 456 L 842 465 L 792 464 L 742 466
+               L 695 478 L 652 505 L 614 532 L 568 545 L 520 546 L 474 536
+               L 432 528 L 392 524 L 354 504 L 315 476 L 274 446 L 234 422
+               L 198 408 L 176 382 L 172 346 L 178 308 L 185 268 Z"
+            fill="url(#hungaryLand)"
+            stroke="#5a3818"
+            stroke-width="3.2"
+            stroke-linejoin="round"
+          />
+
+          <!-- Horvát-Szlavónország és Fiume (A Magyar Szent Korona országai) -->
+          <path
+            d="M 198 408
+               L 234 422 L 274 446 L 315 476 L 354 504 L 392 524
+               L 372 544 L 332 552 L 288 554 L 245 552 L 204 548
+               L 166 565 L 136 592 L 106 565 L 82 552 L 92 522
+               L 124 494 L 154 468 L 178 438 Z"
+            fill="url(#croatiaLand)"
+            stroke="#5a3818"
+            stroke-width="2.8"
+            stroke-linejoin="round"
+          />
+        </g>
+
+        <!-- Horvát-magyar belső határ (Dráva vonala szaggatottan) -->
+        <path
+          d="M 198 408 L 234 422 L 274 446 L 315 476 L 354 504 L 392 524"
+          fill="none"
+          stroke="#7a1c24"
+          stroke-width="2"
+          stroke-dasharray="6,4"
+        />
+
+        <!-- Kárpátok hegyvonulatának stilizált domborzati jelölése -->
+        <g fill="none" stroke="#9e7b4f" stroke-width="1.5" opacity="0.55" stroke-linecap="round">
+          <!-- Északnyugati- és Északi-Kárpátok / Magas-Tátra -->
+          <path d="M 260 165 L 272 150 L 284 165 M 298 152 L 312 135 L 326 152 M 345 140 L 360 120 L 375 140 M 395 135 L 410 116 L 425 135 M 445 136 L 460 118 L 475 136 M 498 140 L 512 124 L 526 140" />
+          <!-- Északkeleti-Kárpátok -->
+          <path d="M 575 142 L 590 126 L 605 142 M 625 150 L 640 134 L 655 150 M 675 162 L 690 146 L 705 162 M 722 180 L 738 164 L 752 182" />
+          <!-- Keleti-Kárpátok -->
+          <path d="M 772 206 L 788 192 L 802 210 M 812 242 L 828 228 L 840 246 M 846 282 L 862 270 L 872 288 M 872 325 L 888 314 L 896 332 M 884 368 L 900 358 L 906 376" />
+          <!-- Déli-Kárpátok -->
+          <path d="M 865 422 L 850 408 L 835 424 M 815 436 L 800 422 L 785 438 M 765 440 L 750 426 L 735 442 M 715 446 L 700 432 L 685 448" />
+        </g>
+
+        <!-- Főbb folyók és tavak -->
+        <g fill="none" stroke="#4c849e" stroke-linecap="round" stroke-linejoin="round" opacity="0.82">
+          <!-- Duna -->
+          <path
+            d="M 192 222 Q 255 245 318 242 Q 368 240 388 265 Q 398 310 390 365 Q 385 425 408 475 Q 438 518 492 536 Q 558 552 636 520"
+            stroke-width="3.6"
+          />
+          <!-- Tisza -->
+          <path
+            d="M 712 178 Q 665 195 612 204 Q 565 215 538 258 Q 515 315 505 385 Q 496 452 482 528"
+            stroke-width="2.9"
+          />
+          <!-- Maros -->
+          <path
+            d="M 826 312 Q 765 348 702 382 Q 625 415 502 442"
+            stroke-width="2.1"
+          />
+          <!-- Száva -->
+          <path
+            d="M 142 466 Q 215 496 298 518 Q 385 536 485 536"
+            stroke-width="2.3"
+          />
+        </g>
+
+        <!-- Balaton és Fertő-tó -->
+        <path
+          d="M 262 342 Q 294 326 326 316 Q 332 323 322 330 Q 290 342 265 350 Z"
+          fill="#6ba1b8"
+          stroke="#46778c"
+          stroke-width="1.2"
+        />
+        <ellipse cx="204" cy="272" rx="7" ry="15" transform="rotate(16 204 272)" fill="#6ba1b8" stroke="#46778c" stroke-width="1" />
+
+        <!-- Történelmi tájegységek feliratai -->
+        <g fill="#755534" font-family="Cinzel, serif" font-weight="600" opacity="0.58" letter-spacing="3" text-anchor="middle">
+          <text x="415" y="172" font-size="15">FELVIDÉK</text>
+          <text x="275" y="378" font-size="14">DUNÁNTÚL</text>
+          <text x="462" y="365" font-size="17">ALFÖLD</text>
+          <text x="655" y="155" font-size="11" letter-spacing="1.5">KÁRPÁTALJA</text>
+          <text x="772" y="368" font-size="18">ERDÉLY</text>
+          <text x="565" y="502" font-size="13" letter-spacing="2">BÁNSÁG</text>
+          <text x="255" y="528" font-size="12" letter-spacing="1.5">HORVÁT-SZLAVÓNORSZÁG</text>
+        </g>
+
+        <!-- Díszes térképészeti kartus (Címkártya a bal felső sarokban) -->
+        <g transform="translate(26, 22)">
+          <rect x="0" y="0" width="244" height="78" rx="10" fill="#fbf4e4" fill-opacity="0.92" stroke="#7a582b" stroke-width="1.8" />
+          <rect x="4" y="4" width="236" height="70" rx="7" fill="none" stroke="#b8860b" stroke-width="0.9" stroke-dasharray="3,2" />
+          <text x="122" y="25" text-anchor="middle" font-family="Cinzel, serif" font-weight="800" font-size="13" fill="#2e1f11" letter-spacing="1.2">
+            MAGYAR KIRÁLYSÁG
+          </text>
+          <text x="122" y="43" text-anchor="middle" font-family="Lora, serif" font-style="italic" font-size="11.5" fill="#6b4423">
+            A Nagy Háború előestéjén (1914)
+          </text>
+          <line x1="32" y1="51" x2="212" y2="51" stroke="#b8860b" stroke-width="1" />
+          <text x="122" y="65" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="10" fill="#7a1c24">
+            TÖRTÉNELMI KVÍZ • KATTINTS A TŰKRE
+          </text>
+        </g>
+
+        <!-- Díszes iránytű (Rózsaszél) a jobb alsó sarokban -->
+        <g transform="translate(1012, 628)">
+          <circle cx="0" cy="0" r="46" fill="#fbf4e4" fill-opacity="0.88" stroke="#6e4e26" stroke-width="1.6" />
+          <circle cx="0" cy="0" r="39" fill="none" stroke="#b8860b" stroke-width="0.9" />
+          <!-- Észak-Dél-Kelet-Nyugat csillag -->
+          <polygon points="0,-36 7,-7 36,0 7,7 0,36 -7,7 -36,0 -7,-7" fill="#d4af37" stroke="#4a3520" stroke-width="1" />
+          <polygon points="0,-36 7,-7 0,0" fill="#7a1c24" />
+          <polygon points="0,36 -7,7 0,0" fill="#1b2e42" />
+          <circle cx="0" cy="0" r="4" fill="#fbf4e4" stroke="#4a3520" stroke-width="1.2" />
+          <text x="0" y="-49" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="11" fill="#2e1f11">É</text>
+          <text x="0" y="58" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="11" fill="#2e1f11">D</text>
+          <text x="53" y="4" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="11" fill="#2e1f11">K</text>
+          <text x="-53" y="4" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="11" fill="#2e1f11">NY</text>
+        </g>
+
+        <!-- Mértékskála a bal alsó sarokban -->
+        <g transform="translate(26, 668)">
+          <rect x="0" y="0" width="180" height="28" rx="6" fill="#fbf4e4" fill-opacity="0.9" stroke="#7a582b" stroke-width="1.2" />
+          <rect x="14" y="14" width="38" height="5" fill="#2e1f11" />
+          <rect x="52" y="14" width="38" height="5" fill="#fbf4e4" stroke="#2e1f11" stroke-width="0.8" />
+          <rect x="90" y="14" width="38" height="5" fill="#2e1f11" />
+          <text x="14" y="11" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#2e1f11">0</text>
+          <text x="52" y="11" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#2e1f11">50</text>
+          <text x="90" y="11" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#2e1f11">100</text>
+          <text x="128" y="11" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#2e1f11">150 km</text>
+        </g>
+
+        <!-- Külső díszkeret -->
+        <rect x="8" y="8" width="1084" height="704" rx="10" fill="none" stroke="#4a3520" stroke-width="2.5" pointer-events="none" />
+        <rect x="13" y="13" width="1074" height="694" rx="8" fill="none" stroke="#b8860b" stroke-width="1" pointer-events="none" />
+
+        <!-- DINAMIKUS VÁROS JELZŐTŰK RÉTEGE (JavaScript tölti fel) -->
+        <g id="cityPinsLayer"></g>
+      </svg>
+    </div>
+
+    <!-- Alsó gyorsválasztó sáv (mobilbarát városgombok is, ha valaki listából kattintana) -->
+    <div class="bg-parchment-100/90 border border-amber-800/25 rounded-2xl p-3 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span class="text-xs font-display font-bold uppercase tracking-wider text-parchment-800">
+          Városok gyorselérése (kattints a térképen vagy itt):
+        </span>
+        <div class="flex items-center gap-2">
+          <span id="remainingHint" class="text-xs text-parchment-800 font-medium">12 megválaszolatlan állomás</span>
+          <button
+            id="bottomSummaryBtn"
+            type="button"
+            onclick="openSummaryModal()"
+            class="hidden px-3 py-1 rounded-lg bg-[#16a34a] hover:bg-green-500 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+          >
+            Végeredmény megtekintése →
+          </button>
+        </div>
+      </div>
+      <div id="cityQuickPills" class="flex flex-wrap gap-1.5 sm:gap-2"></div>
+    </div>
+  </main>
+
+  <!-- KÉRDÉS MODÁLIS ABLAK -->
+  <div
+    id="questionModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-stone-950/75 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalCityTitle"
+  >
+    <div class="modal-animate relative w-full max-w-2xl bg-[#fbf5e6] border-2 border-amber-700 rounded-2xl shadow-2xl overflow-hidden my-auto">
+      <!-- Felső fejléc sáv -->
+      <div class="bg-gradient-to-r from-[#1b2e42] via-[#243b53] to-[#1b2e42] text-parchment-50 px-5 py-4 border-b-2 border-amber-500 flex items-start justify-between gap-3">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <span id="modalCategoryBadge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/40">
+              Témakör
+            </span>
+            <span id="modalStepBadge" class="text-xs text-parchment-300 font-medium">
+              Állomás
+            </span>
+          </div>
+          <h2 id="modalCityTitle" class="font-display text-xl sm:text-2xl font-bold text-amber-200 flex items-center gap-2">
+            Város neve
+          </h2>
+          <p id="modalCityContext" class="font-serif italic text-xs sm:text-sm text-parchment-200/90 mt-0.5">
+            Történelmi kontextus
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onclick="closeQuestionModal()"
+          class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-parchment-100 transition cursor-pointer shrink-0"
+          aria-label="Bezárás"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Kérdés és válaszlehetőségek -->
+      <div class="p-5 sm:p-6 space-y-5">
+        <div class="bg-parchment-100 border border-amber-800/25 rounded-xl p-4 shadow-inner">
+          <p id="modalQuestionText" class="text-base sm:text-lg font-semibold text-parchment-900 leading-relaxed">
+            Kérdés szövege...
+          </p>
+        </div>
+
+        <!-- A, B, C, D gombok -->
+        <div id="modalOptionsContainer" class="grid grid-cols-1 gap-3">
+          <!-- JS generálja a 4 gombot -->
+        </div>
+
+        <!-- Válasz utáni magyarázat doboz -->
+        <div id="modalFeedbackBox" class="hidden rounded-xl p-4 border-2 transition-all">
+          <div class="flex items-start gap-3">
+            <div id="modalFeedbackIcon" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white">
+              ✓
+            </div>
+            <div class="space-y-1">
+              <h3 id="modalFeedbackHeading" class="font-display font-bold text-base">
+                Helyes válasz!
+              </h3>
+              <p id="modalExplanationText" class="text-sm text-parchment-900 leading-relaxed">
+                Tankönyvi magyarázat...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alsó navigációs gombok -->
+        <div class="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-amber-800/20">
+          <button
+            type="button"
+            onclick="closeQuestionModal()"
+            class="px-4 py-2.5 rounded-xl bg-parchment-200 hover:bg-parchment-300 text-parchment-900 font-semibold text-sm transition cursor-pointer"
+          >
+            ← Vissza a térképre
+          </button>
+
+          <button
+            id="modalNextBtn"
+            type="button"
+            onclick="handleModalNext()"
+            class="hidden px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#7a1c24] to-[#99232d] hover:from-[#8f212b] hover:to-[#b02834] text-amber-50 font-semibold text-sm shadow-md transition cursor-pointer"
+          >
+            Következő város →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VÉGEREDMÉNY ÉS ELEMZŐ MODÁLIS ABLAK -->
+  <div
+    id="summaryModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-stone-950/80 backdrop-blur-sm p-3 sm:p-5 overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="summaryTitle"
+  >
+    <div class="modal-animate relative w-full max-w-4xl bg-[#fbf5e6] border-2 border-amber-700 rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+      <!-- Fejléc -->
+      <div class="bg-gradient-to-r from-[#23170d] via-[#3a2615] to-[#23170d] text-parchment-50 px-6 py-4 border-b-2 border-amber-500 flex items-center justify-between shrink-0">
+        <div>
+          <span class="text-[11px] uppercase tracking-widest text-amber-300 font-semibold">Hadijelentés és tudáspróba összesítése</span>
+          <h2 id="summaryTitle" class="font-display text-xl sm:text-2xl font-bold text-amber-100">
+            VÉGEREDMÉNY – 1914 TÖRTÉNELMI KVÍZ
+          </h2>
+        </div>
+        <button
+          type="button"
+          onclick="closeSummaryModal()"
+          class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-parchment-100 transition cursor-pointer"
+          aria-label="Bezárás"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Görgethető tartalom -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-6">
+        <!-- Felső összesítő kártyák: Kördiagram + Rang -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-parchment-100 border border-amber-800/25 rounded-2xl p-5">
+          <!-- Százalékos kördiagram -->
+          <div class="flex flex-col items-center justify-center">
+            <div class="relative w-32 h-32">
+              <svg class="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#dcc18e" stroke-width="12" />
+                <circle
+                  id="scoreCircleArc"
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  fill="none"
+                  stroke="#1b2e42"
+                  stroke-width="12"
+                  stroke-linecap="round"
+                  stroke-dasharray="314.16"
+                  stroke-dashoffset="314.16"
+                  class="transition-all duration-1000 ease-out"
+                />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="summaryPercentText" class="font-display text-2xl font-extrabold text-parchment-900">0%</span>
+                <span id="summaryFractionText" class="text-xs font-semibold text-parchment-800">0 / 12 pont</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Történelmi rang és szöveges értékelés -->
+          <div class="md:col-span-2 space-y-2 text-center md:text-left">
+            <div class="inline-block px-3 py-1 rounded-full bg-amber-600/20 border border-amber-700/30 text-amber-900 font-display font-bold text-xs uppercase tracking-wider">
+              Elért fokozat
+            </div>
+            <h3 id="summaryRankTitle" class="font-display text-xl sm:text-2xl font-bold text-[#7a1c24]">
+              Történelmi Rang
+            </h3>
+            <p id="summaryRankDesc" class="text-sm text-parchment-900 leading-relaxed">
+              Értékelés leírása...
+            </p>
+          </div>
+        </div>
+
+        <!-- "EZEN MÉG GYAKOROLJ!" Diagnosztikai doboz -->
+        <div id="weaknessSection" class="rounded-2xl border-2 p-5 shadow-sm">
+          <!-- JS tölti fel a gyenge témakörök elemzésével -->
+        </div>
+
+        <!-- Témakörönkénti részletes bontás -->
+        <div class="bg-white/70 border border-amber-800/20 rounded-2xl p-5 space-y-3">
+          <h3 class="font-display text-base sm:text-lg font-bold text-parchment-900 flex items-center gap-2">
+            <span>Témakörönkénti teljesítmény (11. osztályos tananyag)</span>
+          </h3>
+          <div id="categoryBreakdownList" class="space-y-3">
+            <!-- JS generálja a 5 témakör sávdiagramját -->
+          </div>
+        </div>
+
+        <!-- Összes kérdés visszanézése -->
+        <div class="space-y-3">
+          <h3 class="font-display text-base sm:text-lg font-bold text-parchment-900">
+            Részletes kérdés- és válaszelemzés (12 város)
+          </h3>
+          <div id="reviewQuestionsList" class="space-y-2.5">
+            <!-- JS tölti fel -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Lábléc műveletek -->
+      <div class="bg-parchment-200/80 px-6 py-4 border-t border-amber-800/25 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <button
+          type="button"
+          onclick="closeSummaryModal()"
+          class="px-4 py-2.5 rounded-xl bg-parchment-100 hover:bg-white border border-amber-800/30 text-parchment-900 font-semibold text-sm transition cursor-pointer"
+        >
+          Térkép megtekintése
+        </button>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            onclick="downloadSelfHtml()"
+            class="px-4 py-2.5 rounded-xl bg-[#1b2e42] hover:bg-[#26405c] text-amber-100 font-semibold text-sm transition cursor-pointer"
+          >
+            Játék mentése (.html)
+          </button>
+          <button
+            type="button"
+            onclick="restartGame()"
+            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-bold text-sm shadow transition cursor-pointer"
+          >
+            ↻ Újrajátszás
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Értesítési buborék (Toast) letöltéshez -->
+  <div
+    id="toastMessage"
+    class="fixed bottom-5 right-5 z-50 hidden items-center gap-2 bg-[#1b2e42] text-amber-100 border border-amber-400/50 px-4 py-3 rounded-xl shadow-xl text-sm font-medium"
+  >
+    <span class="text-emerald-400 font-bold">✓</span>
+    <span id="toastText">Fájl letöltése elindult!</span>
+  </div>
+
+  <script>
+    /**
+     * TÖRTÉNELMI ADATBÁZIS – 12 VÁROS ÉS 12 KÉRDÉS (11. osztályos történelem: OH-TOR11TB, 9–10. lecke)
+     * 5 témakörbe rendezve:
+     * 1. "Évszámok és kronológia"
+     * 2. "Szövetségi rendszerek és nagyhatalmak"
+     * 3. "Háborús okok és nagyhatalmi érdekek"
+     * 4. "Személyek és döntéshozók"
+     * 5. "A kitörés láncreakciója és haditervek"
+     */
+    const CITIES_DATA = [
+      {
+        id: 'budapest',
+        name: 'Budapest',
+        x: 392,
+        y: 292,
+        labelOffset: { dx: 0, dy: -38 },
+        isCapital: true,
+        category: 'Évszámok és kronológia',
+        context: 'A Magyar Királyság fővárosa, a dualista Monarchia egyik politikai központja.',
+        question: 'Melyik évben jött létre Németország, az Osztrák–Magyar Monarchia és Olaszország részvételével a Hármas szövetség?',
+        options: [
+          '1871-ben, a Német Császárság kikiáltásakor',
+          '1879-ben, a kettős szövetség megkötésével egy időben',
+          '1882-ben, amikor Olaszország csatlakozott a német–osztrák-magyar szövetséghez',
+          '1907-ben, az angol–orosz egyezményre adott válaszként'
+        ],
+        correctIndex: 2,
+        explanation: 'A német–osztrák-magyar kettős szövetséghez (1879) a Franciaországgal gyarmati vitába keveredő Olaszország 1882-ben csatlakozott, így alakult meg a Hármas szövetség.'
+      },
+      {
+        id: 'pozsony',
+        name: 'Pozsony',
+        x: 218,
+        y: 224,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Szövetségi rendszerek és nagyhatalmak',
+        context: 'Koronázóváros a Duna mentén, a Monarchia nyugati kapuja.',
+        question: 'Mely három nagyhatalom alkotta 1907-re a teljes körűvé vált Antant szövetségi rendszerét?',
+        options: [
+          'Nagy-Britannia, Franciaország és Olaszország',
+          'Nagy-Britannia, Franciaország és Oroszország',
+          'Németország, az Osztrák–Magyar Monarchia és Oroszország',
+          'Franciaország, Oroszország és az Amerikai Egyesült Államok'
+        ],
+        correctIndex: 1,
+        explanation: 'Az 1891–94-es francia–orosz szövetség és az 1904-es brit–francia „szívélyes megegyezés” (entente cordiale) után 1907-ben az angol–orosz egyezménnyel jött létre a Hármas antant.'
+      },
+      {
+        id: 'kassa',
+        name: 'Kassa',
+        x: 558,
+        y: 174,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Szövetségi rendszerek és nagyhatalmak',
+        context: 'A Felvidék gazdasági és kulturális központja.',
+        question: 'Miért adta fel Nagy-Britannia korábbi „fényes elszigeteltség” politikáját a 20. század elején, és miért közeledett Franciaországhoz és Oroszországhoz?',
+        options: [
+          'Mert Oroszország fegyveres támadást indított Brit-India ellen',
+          'Mert Németország rohamos flottafejlesztése és világpolitikai törekvései veszélyeztették a brit tengeri fölényt',
+          'Mert az Osztrák–Magyar Monarchia lezárta a Gibraltári-szorost',
+          'Mert Franciaország lemondott minden afrikai gyarmatáról a britek javára'
+        ],
+        correctIndex: 1,
+        explanation: 'II. Vilmos német császár „világpolitikája” (Weltpolitik) és a nagyszabású német hadiflotta-építés közvetlenül veszélyeztette Nagy-Britannia tengeri és gyarmati hegemóniáját.'
+      },
+      {
+        id: 'ungvar',
+        name: 'Ungvár',
+        x: 666,
+        y: 178,
+        labelOffset: { dx: 18, dy: -36 },
+        category: 'A kitörés láncreakciója és haditervek',
+        context: 'Kárpátalja kapuja az északkeleti határvidéken, közel az orosz határhoz.',
+        question: 'Mi volt a neve a német vezérkar kétfrontos háborúra kidolgozott villámháborús tervének, amely Franciaország gyors legyőzésével számolt az orosz mozgósítás előtt?',
+        options: [
+          'Barbarossa-terv',
+          'Schlieffen-terv',
+          'Bismarck-terv',
+          'Ludendorff-terv'
+        ],
+        correctIndex: 1,
+        explanation: 'Alfred von Schlieffen tábornok terve arra épült, hogy Németország a semleges Belgiumon át gyorsan bekeríti és legyőzi Franciaországot, mielőtt a lassan mozgósító Oroszország támadni tudna.'
+      },
+      {
+        id: 'kolozsvar',
+        name: 'Kolozsvár',
+        x: 734,
+        y: 326,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Háborús okok és nagyhatalmi érdekek',
+        context: 'Erdély történelmi központja, egyetemi és kulturális fellegvár.',
+        question: 'Mi volt Franciaország legfőbb európai külpolitikai célja (revansvágya) az 1871-es porosz–francia háború elvesztése után?',
+        options: [
+          'Elzász és Lotaringia visszaszerzése Németországtól',
+          'Belgium és Hollandia bekebelezése',
+          'A Habsburg Birodalom felosztása Oroszországgal',
+          'Korzika és Szardínia megszerzése Olaszországtól'
+        ],
+        correctIndex: 0,
+        explanation: 'Az 1871-es vereség után Németország elcsatolta Franciaországtól a nyersanyagokban gazdag Elzászt és Lotaringiát, ami tartós francia revansvágyat (visszavágási törekvést) szült.'
+      },
+      {
+        id: 'brasso',
+        name: 'Brassó',
+        x: 882,
+        y: 434,
+        labelOffset: { dx: -14, dy: -36 },
+        category: 'A kitörés láncreakciója és haditervek',
+        context: 'A délkeleti Kárpátok őrvárosa a román határ közelében.',
+        question: 'Melyik semleges ország német lerohanása szolgáltatott közvetlen okot arra, hogy Nagy-Britannia 1914. augusztus 4-én hadat üzenjen Németországnak?',
+        options: [
+          'Svájc',
+          'Hollandia',
+          'Belgium',
+          'Dánia'
+        ],
+        correctIndex: 2,
+        explanation: 'A Schlieffen-terv végrehajtása során a német csapatok megsértették Belgium nemzetközileg garantált semlegességét, ezért Nagy-Britannia hadba lépett Németország ellen.'
+      },
+      {
+        id: 'temesvar',
+        name: 'Temesvár',
+        x: 564,
+        y: 464,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Háborús okok és nagyhatalmi érdekek',
+        context: 'A Bánság virágzó központja, a balkáni térség közvetlen előterében.',
+        question: 'Miért nevezték a Balkán-félszigetet a 20. század elején „Európa puskaporos hordójának”?',
+        options: [
+          'Mert itt működtek Európa legnagyobb lőpor- és ágyúgyárai',
+          'Mert a gyengülő Oszmán Birodalom örökségéért küzdő kisállamok és a nagyhatalmak (Monarchia, Oroszország) érdekei itt ütköztek',
+          'Mert Németország itt építette ki legnagyobb tengerészeti támaszpontját',
+          'Mert Franciaország és Nagy-Britannia gyarmatosítani akarta Szerbiát'
+        ],
+        correctIndex: 1,
+        explanation: 'Az Oszmán Birodalom visszaszorulásával a balkáni nemzetállamok (pl. Szerbia, Bulgária) területi vitái, valamint az Osztrák–Magyar Monarchia és Oroszország befolyási versengése állandó háborús veszélyt jelentett.'
+      },
+      {
+        id: 'ujvidek',
+        name: 'Újvidék',
+        x: 448,
+        y: 514,
+        labelOffset: { dx: 0, dy: 28 },
+        category: 'Évszámok és kronológia',
+        context: 'Délvidéki Duna-parti város, a szerb határ közvetlen közelében.',
+        question: 'Melyik napon követte el Gavrilo Princip a szarajevói merényletet, amely közvetlen ürügyet szolgáltatott az I. világháború kirobbantásához?',
+        options: [
+          '1914. június 28.',
+          '1914. július 23.',
+          '1914. július 28.',
+          '1914. augusztus 1.'
+        ],
+        correctIndex: 0,
+        explanation: '1914. június 28-án Szarajevóban a szerb nacionalista szervezethez kötődő Gavrilo Princip agyonlőtte a trónörököst. Egy hónappal később, július 28-án a Monarchia hadat üzent Szerbiának.'
+      },
+      {
+        id: 'zagrab',
+        name: 'Zágráb',
+        x: 184,
+        y: 488,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Évszámok és kronológia',
+        context: 'Horvát-Szlavónország fővárosa, a délszláv kérdés egyik gyújtópontja.',
+        question: 'Melyik évben csatolta (annektálta) az Osztrák–Magyar Monarchia hivatalosan is Bosznia-Hercegovinát, súlyos nemzetközi válságot idézve elő?',
+        options: [
+          '1878-ban',
+          '1904-ben',
+          '1908-ban',
+          '1913-ban'
+        ],
+        correctIndex: 2,
+        explanation: 'A Monarchia 1878 óta megszállva tartotta a tartományt, majd 1908-ban hivatalosan is bekebelezte (annexiós válság), ami rendkívül kiélezte a viszonyt Szerbiával és Oroszországgal.'
+      },
+      {
+        id: 'fiume',
+        name: 'Fiume',
+        x: 84,
+        y: 558,
+        labelOffset: { dx: 18, dy: 28 },
+        category: 'Szövetségi rendszerek és nagyhatalmak',
+        context: 'Magyarország egyetlen tengeri kikötője az Adriai-tenger partján.',
+        question: 'Hogyan viselkedett Olaszország 1914 nyarán, az I. világháború kitörésekor, annak ellenére, hogy a Hármas szövetség tagja volt?',
+        options: [
+          'Azonnal hadat üzent Franciaországnak és Nagy-Britanniának',
+          'Semleges maradt, arra hivatkozva, hogy a szövetség csak védelmi háborúra kötelezi',
+          'Rögtön 1914 augusztusában az Antant oldalán lépett hadba',
+          'Csapatokat küldött Galíciába az orosz hadsereg ellen'
+        ],
+        correctIndex: 1,
+        explanation: 'Olaszország kimaradt az 1914-es hadba lépésből, mivel a Monarchia támadóként lépett fel Szerbia ellen, ráadásul az olaszoknak területi igényeik voltak a Monarchiával szemben (1915-ben az Antant oldalán léptek be).'
+      },
+      {
+        id: 'debrecen',
+        name: 'Debrecen',
+        x: 576,
+        y: 286,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Személyek és döntéshozók',
+        context: 'A Tiszántúl központja, a magyar politikai közélet meghatározó városa.',
+        question: 'Melyik magyar miniszterelnök ellenezte kezdetben a közös minisztertanácsban a Szerbia elleni azonnali háborút, tartva egy európai világháborútól?',
+        options: [
+          'Gróf Andrássy Gyula',
+          'Gróf Tisza István',
+          'Gróf Károlyi Mihály',
+          'Gróf Bethlen István'
+        ],
+        correctIndex: 1,
+        explanation: 'Gróf Tisza István magyar miniszterelnök kezdetben ellenezte a háborút (féltette Magyarországot a román és orosz támadástól, valamint nem akart újabb szláv területeket), csak német nyomásra és területi hódításokról való lemondás feltételével egyezett bele.'
+      },
+      {
+        id: 'pecs',
+        name: 'Pécs',
+        x: 332,
+        y: 438,
+        labelOffset: { dx: 0, dy: -36 },
+        category: 'Személyek és döntéshozók',
+        context: 'Dél-Dunántúl történelmi püspöki és egyetemi városa.',
+        question: 'Ki volt az a Habsburg főherceg, az Osztrák–Magyar Monarchia trónörököse, akit feleségével együtt 1914. június 28-án Szarajevóban meggyilkoltak?',
+        options: [
+          'Rudolf főherceg',
+          'Ferenc Ferdinánd',
+          'IV. Károly',
+          'Ferenc József'
+        ],
+        correctIndex: 1,
+        explanation: 'Ferenc Ferdinánd trónörökös (Ferenc József unokaöccse) és felesége, Zsófia hercegnő meggyilkolása szolgáltatott közvetlen ürügyet Bécs számára a Szerbia elleni fellépéshez.'
+      }
+    ];
+
+    /**
+     * Témakörök tanulási tanácsai, ha a játékos hibázik valamelyik területen
+     */
+    const CATEGORY_STUDY_TIPS = {
+      'Évszámok és kronológia': {
+        tip: 'Ismételd át az I. világháború előzményeinek kulcsévszámait: 1879 (kettős szövetség), 1882 (Hármas szövetség), 1907 (Antant kialakulása), 1908 (Bosznia-Hercegovina annexiója), 1914. június 28. (szarajevói merénylet) és 1914. július 28. (hadüzenet Szerbiának).'
+      },
+      'Szövetségi rendszerek és nagyhatalmak': {
+        tip: 'Nézd át a két szembenálló tömb felépítését! Hármas szövetség: Németország, Osztrák–Magyar Monarchia, Olaszország (amely 1914-ben semleges maradt). Antant: Nagy-Britannia, Franciaország, Oroszország – és értsd meg a német flottafejlesztés szerepét!'
+      },
+      'Háborús okok és nagyhatalmi érdekek': {
+        tip: 'Figyelj a nagyhatalmi ellentétek mélyebb okaira: a francia revansvágyra (Elzász-Lotaringia visszaszerzése 1871 után) és a Balkánra („Európa puskaporos hordója”), ahol az Oszmán Birodalom visszaszorulása miatt ütköztek a szerb, orosz és osztrák–magyar érdekek.'
+      },
+      'Személyek és döntéshozók': {
+        tip: 'Rögzítsd a kulcsszereplőket: Ferenc Ferdinánd trónörököst (a szarajevói merénylet áldozatát), Gavrilo Princip merénylőt, valamint gróf Tisza István magyar miniszterelnököt, aki kezdetben ellenezte a Szerbia elleni háborút.'
+      },
+      'A kitörés láncreakciója és haditervek': {
+        tip: 'Kövesd végig 1914 nyarának láncreakcióját és a haditerveket: a német villámháborús Schlieffen-terv miatt megtámadták a semleges Belgiumot, ami miatt Nagy-Britannia is hadba lépett Németország ellen.'
+      }
+    };
+
+    // Játék állapot
+    let gameState = {
+      answers: {}, // { cityId: { selectedIndex: number, isCorrect: boolean } }
+      activeCityId: null,
+      soundEnabled: true
+    };
+
+    // Web Audio API alapú finom visszajelző hangok (külső URL nélkül)
+    let audioCtx = null;
+    function playTone(type) {
+      if (!gameState.soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(680, now + 0.08);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'correct') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          osc.start(now);
+          osc.stop(now + 0.42);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(165, now + 0.25);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        }
+      } catch (e) {
+        // Ha a böngésző blokkolja a hangot, csendben folytatjuk
+      }
+    }
+
+    function toggleSound() {
+      gameState.soundEnabled = !gameState.soundEnabled;
+      document.getElementById('soundOnIcon').classList.toggle('hidden', !gameState.soundEnabled);
+      document.getElementById('soundOffIcon').classList.toggle('hidden', gameState.soundEnabled);
+    }
+
+    /**
+     * Térkép jelzőtűk és gyorsválasztó gombok kirajzolása
+     */
+    function renderMapAndPins() {
+      const pinsLayer = document.getElementById('cityPinsLayer');
+      const quickPills = document.getElementById('cityQuickPills');
+      pinsLayer.innerHTML = '';
+      quickPills.innerHTML = '';
+
+      CITIES_DATA.forEach((city) => {
+        const answer = gameState.answers[city.id];
+        const isAnswered = Boolean(answer);
+        const isCorrect = answer?.isCorrect;
+
+        // Színek meghatározása állapot szerint:
+        // Nyitott: citromsárga (#facc15), Helyes: zöld (#16a34a), Hibás: piros (#dc2626)
+        let pinFill = '#facc15';
+        let pinStroke = '#854d0e';
+        let labelBg = '#422006';
+        let labelStroke = '#facc15';
+
+        if (isAnswered && isCorrect) {
+          pinFill = '#16a34a';
+          pinStroke = '#ffffff';
+          labelBg = '#14532d';
+          labelStroke = '#4ade80';
+        } else if (isAnswered && !isCorrect) {
+          pinFill = '#dc2626';
+          pinStroke = '#ffffff';
+          labelBg = '#7f1d1d';
+          labelStroke = '#fca5a5';
+        }
+
+        // Külső SVG csoport (pozicionálás kizárólag SVG transform="translate(x, y)" attribútummal!)
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'city-pin');
+        g.setAttribute('transform', `translate(${city.x}, ${city.y})`);
+        g.setAttribute('tabindex', '0');
+        g.setAttribute('role', 'button');
+        g.setAttribute('aria-label', `${city.name} – ${isAnswered ? (isCorrect ? 'Helyesen megválaszolva' : 'Hibásan megválaszolva') : 'Kattints a kérdéshez'}`);
+
+        g.addEventListener('click', () => openCityQuestion(city.id));
+        g.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openCityQuestion(city.id);
+          }
+        });
+
+        // Láthatatlan, mozdulatlan kattintási/hover felület, hogy a tű soha ne ugráljon el az egér elől
+        const hitTarget = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hitTarget.setAttribute('cx', '0');
+        hitTarget.setAttribute('cy', '-16');
+        hitTarget.setAttribute('r', '26');
+        hitTarget.setAttribute('fill', 'transparent');
+        g.appendChild(hitTarget);
+
+        // Belső vizuális csoport (erre hat a finom CSS hover nagyítás)
+        const visualGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        visualGroup.setAttribute('class', 'pin-visual');
+
+        // 1. Pulzáló hullám, ha még nincs megválaszolva
+        if (!isAnswered) {
+          const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          pulse.setAttribute('cx', '0');
+          pulse.setAttribute('cy', '-14');
+          pulse.setAttribute('r', '14');
+          pulse.setAttribute('fill', '#eab308');
+          pulse.setAttribute('class', 'pin-pulse-ring');
+          visualGroup.appendChild(pulse);
+        }
+
+        // 2. Klasszikus térkép jelzőtű (Teardrop Map Pin)
+        const pinPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const scale = city.isCapital ? 1.18 : 1.0;
+        pinPath.setAttribute('d', 'M 0 0 C -10 -12 -15 -20 -15 -28 A 15 15 0 1 1 15 -28 C 15 -20 10 -12 0 0 Z');
+        pinPath.setAttribute('transform', `scale(${scale})`);
+        pinPath.setAttribute('fill', pinFill);
+        pinPath.setAttribute('stroke', pinStroke);
+        pinPath.setAttribute('stroke-width', '2.2');
+        pinPath.setAttribute('filter', 'url(#pinShadow)');
+        visualGroup.appendChild(pinPath);
+
+        // 3. Jelzőtű belső ikon (sötét pont a citromsárgán, fehér pipa a zöldön, fehér X a piroson)
+        if (!isAnswered) {
+          const innerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          innerDot.setAttribute('cx', '0');
+          innerDot.setAttribute('cy', String(-28 * scale));
+          innerDot.setAttribute('r', String(5.2 * scale));
+          innerDot.setAttribute('fill', '#422006');
+          visualGroup.appendChild(innerDot);
+        } else if (isCorrect) {
+          const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          check.setAttribute('d', 'M -6 -28 L -1.5 -23.5 L 7 -33');
+          check.setAttribute('transform', `scale(${scale})`);
+          check.setAttribute('fill', 'none');
+          check.setAttribute('stroke', '#ffffff');
+          check.setAttribute('stroke-width', '2.8');
+          check.setAttribute('stroke-linecap', 'round');
+          check.setAttribute('stroke-linejoin', 'round');
+          visualGroup.appendChild(check);
+        } else {
+          const cross = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          cross.setAttribute('d', 'M -5 -33 L 5 -23 M 5 -33 L -5 -23');
+          cross.setAttribute('transform', `scale(${scale})`);
+          cross.setAttribute('fill', 'none');
+          cross.setAttribute('stroke', '#ffffff');
+          cross.setAttribute('stroke-width', '2.8');
+          cross.setAttribute('stroke-linecap', 'round');
+          visualGroup.appendChild(cross);
+        }
+
+        // 4. Városnév címke (jól olvasható plakett)
+        const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const lx = city.labelOffset.dx;
+        const ly = city.labelOffset.dy - (city.isCapital ? 6 : 0);
+        labelGroup.setAttribute('transform', `translate(${lx}, ${ly})`);
+
+        const textWidth = city.name.length * 8.2 + 18;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', String(-textWidth / 2));
+        rect.setAttribute('y', '-22');
+        rect.setAttribute('width', String(textWidth));
+        rect.setAttribute('height', '20');
+        rect.setAttribute('rx', '6');
+        rect.setAttribute('fill', labelBg);
+        rect.setAttribute('stroke', labelStroke);
+        rect.setAttribute('stroke-width', '1.3');
+        rect.setAttribute('class', 'city-label-bg');
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', '0');
+        text.setAttribute('y', '-8.5');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#fcf9f2');
+        text.setAttribute('font-family', 'Inter, sans-serif');
+        text.setAttribute('font-weight', city.isCapital ? '800' : '700');
+        text.setAttribute('font-size', city.isCapital ? '12' : '11');
+        text.setAttribute('class', 'city-label-text');
+        text.textContent = city.name;
+
+        labelGroup.appendChild(rect);
+        labelGroup.appendChild(text);
+        visualGroup.appendChild(labelGroup);
+
+        g.appendChild(visualGroup);
+        pinsLayer.appendChild(g);
+
+        // Alsó gyorsválasztó gomb (pill)
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.onclick = () => openCityQuestion(city.id);
+        let pillClasses = 'px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer ';
+        if (!isAnswered) {
+          pillClasses += 'bg-yellow-50 hover:bg-yellow-100 text-parchment-900 border-yellow-600/50 shadow-xs';
+          pill.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-[#facc15] border border-[#854d0e]"></span><span>${city.name}</span>`;
+        } else if (isCorrect) {
+          pillClasses += 'bg-green-100 hover:bg-green-200 text-green-950 border-green-600';
+          pill.innerHTML = `<span class="text-[#16a34a] font-bold">✓</span><span>${city.name}</span>`;
+        } else {
+          pillClasses += 'bg-red-100 hover:bg-red-200 text-red-950 border-red-600';
+          pill.innerHTML = `<span class="text-[#dc2626] font-bold">✕</span><span>${city.name}</span>`;
+        }
+        pill.className = pillClasses;
+        quickPills.appendChild(pill);
+      });
+
+      updateHeaderStats();
+    }
+
+    /**
+     * Fejléc statisztikák frissítése
+     */
+    function updateHeaderStats() {
+      const answeredIds = Object.keys(gameState.answers);
+      const answeredCount = answeredIds.length;
+      const totalCount = CITIES_DATA.length;
+      const correctCount = answeredIds.filter((id) => gameState.answers[id].isCorrect).length;
+
+      document.getElementById('progressText').textContent = `${answeredCount}/${totalCount} megválaszolva`;
+      document.getElementById('scoreText').textContent = `${correctCount}`;
+      document.getElementById('progressBar').style.width = `${Math.round((answeredCount / totalCount) * 100)}%`;
+
+      const remaining = totalCount - answeredCount;
+      const remainingHint = document.getElementById('remainingHint');
+      const randomBtn = document.getElementById('randomCityBtn');
+      const summaryHeaderBtn = document.getElementById('showSummaryHeaderBtn');
+      const bottomSummaryBtn = document.getElementById('bottomSummaryBtn');
+
+      if (remaining > 0) {
+        remainingHint.textContent = `${remaining} megválaszolatlan állomás`;
+        randomBtn.classList.remove('hidden');
+        summaryHeaderBtn.classList.add('hidden');
+        summaryHeaderBtn.classList.remove('inline-flex');
+        bottomSummaryBtn.classList.add('hidden');
+      } else {
+        remainingHint.textContent = 'Minden város megválaszolva!';
+        randomBtn.classList.add('hidden');
+        summaryHeaderBtn.classList.remove('hidden');
+        summaryHeaderBtn.classList.add('inline-flex');
+        bottomSummaryBtn.classList.remove('hidden');
+      }
+    }
+
+    /**
+     * Kérdés modális ablak megnyitása adott városhoz
+     */
+    function openCityQuestion(cityId) {
+      const city = CITIES_DATA.find((c) => c.id === cityId);
+      if (!city) return;
+
+      playTone('click');
+      gameState.activeCityId = cityId;
+
+      const cityIndex = CITIES_DATA.findIndex((c) => c.id === cityId) + 1;
+      document.getElementById('modalCategoryBadge').textContent = city.category;
+      document.getElementById('modalStepBadge').textContent = `${cityIndex}. állomás a 12-ből`;
+      document.getElementById('modalCityTitle').textContent = city.name;
+      document.getElementById('modalCityContext').textContent = city.context;
+      document.getElementById('modalQuestionText').textContent = city.question;
+
+      const optionsContainer = document.getElementById('modalOptionsContainer');
+      optionsContainer.innerHTML = '';
+
+      const existingAnswer = gameState.answers[city.id];
+      const letters = ['A', 'B', 'C', 'D'];
+
+      city.options.forEach((optionText, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.optionIndex = idx;
+
+        let baseStyle =
+          'w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition flex items-start gap-3.5 font-medium text-sm sm:text-base ';
+
+        if (!existingAnswer) {
+          baseStyle +=
+            'bg-white hover:bg-amber-50 border-amber-800/25 hover:border-amber-600 text-parchment-900 shadow-xs cursor-pointer active:scale-[0.99]';
+          btn.onclick = () => submitAnswer(city.id, idx);
+        } else {
+          btn.disabled = true;
+          if (idx === city.correctIndex) {
+            baseStyle += 'bg-emerald-50 border-emerald-600 text-emerald-950 font-semibold';
+          } else if (idx === existingAnswer.selectedIndex && !existingAnswer.isCorrect) {
+            baseStyle += 'bg-rose-50 border-rose-600 text-rose-950';
+          } else {
+            baseStyle += 'bg-stone-100/70 border-stone-300 text-stone-500 opacity-75';
+          }
+        }
+
+        let badgeStyle =
+          'w-8 h-8 rounded-lg flex items-center justify-center font-display font-bold text-sm shrink-0 border ';
+        if (!existingAnswer) {
+          badgeStyle += 'bg-parchment-200 text-parchment-900 border-amber-800/30';
+        } else if (idx === city.correctIndex) {
+          badgeStyle += 'bg-emerald-600 text-white border-emerald-700';
+        } else if (idx === existingAnswer.selectedIndex && !existingAnswer.isCorrect) {
+          badgeStyle += 'bg-rose-600 text-white border-rose-700';
+        } else {
+          badgeStyle += 'bg-stone-200 text-stone-500 border-stone-300';
+        }
+
+        btn.className = baseStyle;
+        btn.innerHTML = `
+          <span class="${badgeStyle}">${letters[idx]}</span>
+          <span class="pt-1 leading-snug">${optionText}</span>
+        `;
+        optionsContainer.appendChild(btn);
+      });
+
+      // Visszajelzés és tovább gomb beállítása
+      const feedbackBox = document.getElementById('modalFeedbackBox');
+      const nextBtn = document.getElementById('modalNextBtn');
+
+      if (existingAnswer) {
+        showAnswerFeedback(city, existingAnswer.isCorrect);
+        nextBtn.classList.remove('hidden');
+        const allDone = Object.keys(gameState.answers).length === CITIES_DATA.length;
+        nextBtn.textContent = allDone ? 'Végeredmény megtekintése →' : 'Következő város →';
+      } else {
+        feedbackBox.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+      }
+
+      const modal = document.getElementById('questionModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    /**
+     * Válasz beküldése és kiértékelése
+     */
+    function submitAnswer(cityId, selectedIndex) {
+      if (gameState.answers[cityId]) return;
+
+      const city = CITIES_DATA.find((c) => c.id === cityId);
+      if (!city) return;
+
+      const isCorrect = selectedIndex === city.correctIndex;
+      gameState.answers[cityId] = {
+        selectedIndex,
+        isCorrect
+      };
+
+      playTone(isCorrect ? 'correct' : 'wrong');
+
+      // Újrarendereljük a kártyát és a térképet
+      renderMapAndPins();
+      openCityQuestion(cityId);
+    }
+
+    /**
+     * Válasz utáni magyarázó doboz megjelenítése
+     */
+    function showAnswerFeedback(city, isCorrect) {
+      const feedbackBox = document.getElementById('modalFeedbackBox');
+      const feedbackIcon = document.getElementById('modalFeedbackIcon');
+      const feedbackHeading = document.getElementById('modalFeedbackHeading');
+      const explanationText = document.getElementById('modalExplanationText');
+
+      feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-500', 'bg-rose-50', 'border-rose-500');
+
+      if (isCorrect) {
+        feedbackBox.classList.add('bg-emerald-50', 'border-emerald-500');
+        feedbackIcon.className = 'w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white bg-emerald-600';
+        feedbackIcon.textContent = '✓';
+        feedbackHeading.className = 'font-display font-bold text-base text-emerald-900';
+        feedbackHeading.textContent = 'Helyes válasz! (+1 pont)';
+      } else {
+        feedbackBox.classList.add('bg-rose-50', 'border-rose-500');
+        feedbackIcon.className = 'w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white bg-rose-600';
+        feedbackIcon.textContent = '✕';
+        feedbackHeading.className = 'font-display font-bold text-base text-rose-900';
+        feedbackHeading.textContent = `Sajnos téves! A helyes válasz: ${['A', 'B', 'C', 'D'][city.correctIndex]}`;
+      }
+
+      explanationText.textContent = city.explanation;
+    }
+
+    function closeQuestionModal() {
+      const modal = document.getElementById('questionModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      gameState.activeCityId = null;
+    }
+
+    /**
+     * Kérdéskártya "Tovább" gomb kezelése: következő megválaszolatlan város vagy végeredmény
+     */
+    function handleModalNext() {
+      const unanswered = CITIES_DATA.filter((c) => !gameState.answers[c.id]);
+      if (unanswered.length === 0) {
+        closeQuestionModal();
+        openSummaryModal();
+      } else {
+        openCityQuestion(unanswered[0].id);
+      }
+    }
+
+    /**
+     * Véletlenszerű megválaszolatlan város megnyitása
+     */
+    function openRandomUnansweredCity() {
+      const unanswered = CITIES_DATA.filter((c) => !gameState.answers[c.id]);
+      if (unanswered.length === 0) {
+        openSummaryModal();
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * unanswered.length);
+      openCityQuestion(unanswered[randomIndex].id);
+    }
+
+    /**
+     * VÉGEREDMÉNY ÉS GYENGE PONTOK ELEMZÉSE
+     */
+    function openSummaryModal() {
+      const total = CITIES_DATA.length;
+      const correctCount = CITIES_DATA.filter((c) => gameState.answers[c.id]?.isCorrect).length;
+      const percentage = Math.round((correctCount / total) * 100);
+
+      // Számok és kördiagram
+      document.getElementById('summaryPercentText').textContent = `${percentage}%`;
+      document.getElementById('summaryFractionText').textContent = `${correctCount} / ${total} pont`;
+
+      const arc = document.getElementById('scoreCircleArc');
+      const circumference = 314.16;
+      const offset = circumference - (percentage / 100) * circumference;
+      arc.style.stroke = percentage >= 75 ? '#059669' : percentage >= 50 ? '#d97706' : '#be123c';
+      setTimeout(() => {
+        arc.style.strokeDashoffset = offset;
+      }, 60);
+
+      // Történelmi rang meghatározása
+      let rankTitle = '';
+      let rankDesc = '';
+      if (percentage === 100) {
+        rankTitle = 'Kiváló Diplomata és Hadtörténész (100%)';
+        rankDesc = 'Lenyűgöző teljesítmény! Hibátlanul ismered az I. világháború előzményeit, a szövetségi rendszereket, a kulcsévszámokat és a kitörés láncreakcióját.';
+      } else if (percentage >= 80) {
+        rankTitle = 'Tapasztalt Vezérkari Tiszt';
+        rankDesc = 'Nagyon szép eredmény! Biztos alapokkal rendelkezel az 1914 előtti európai nagyhatalmi politikából és a háború kitörésének okaiból.';
+      } else if (percentage >= 58) {
+        rankTitle = 'Ígéretes Történelemhallgató';
+        rankDesc = 'Jó úton haladsz, a legfontosabb összefüggéseket már ismered, de néhány részletkérdést még érdemes átismételni a tökéletes tudáshoz.';
+      } else {
+        rankTitle = 'Kezdő Kadét – Újraolvasás javasolt';
+        rankDesc = 'A téma több részlete még gyakorlásra szorul. Nézd át az alábbi kiemelt témaköröket, majd próbáld meg újra meghódítani a térképet!';
+      }
+
+      document.getElementById('summaryRankTitle').textContent = rankTitle;
+      document.getElementById('summaryRankDesc').textContent = rankDesc;
+
+      // Témakörönkénti statisztika kiszámítása
+      const categoryStats = {};
+      CITIES_DATA.forEach((city) => {
+        if (!categoryStats[city.category]) {
+          categoryStats[city.category] = { total: 0, correct: 0 };
+        }
+        categoryStats[city.category].total += 1;
+        if (gameState.answers[city.id]?.isCorrect) {
+          categoryStats[city.category].correct += 1;
+        }
+      });
+
+      const breakdownList = document.getElementById('categoryBreakdownList');
+      breakdownList.innerHTML = '';
+
+      const weakCategories = [];
+
+      Object.entries(categoryStats).forEach(([catName, stat]) => {
+        const catPct = Math.round((stat.correct / stat.total) * 100);
+        if (catPct < 100) {
+          weakCategories.push({ name: catName, pct: catPct, correct: stat.correct, total: stat.total });
+        }
+
+        const barColor = catPct === 100 ? 'bg-emerald-600' : catPct >= 50 ? 'bg-amber-500' : 'bg-rose-600';
+        const row = document.createElement('div');
+        row.className = 'space-y-1';
+        row.innerHTML = `
+          <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-parchment-900">
+            <span>${catName}</span>
+            <span>${stat.correct} / ${stat.total} (${catPct}%)</span>
+          </div>
+          <div class="w-full h-2.5 bg-parchment-200 rounded-full overflow-hidden">
+            <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width: ${catPct}%"></div>
+          </div>
+        `;
+        breakdownList.appendChild(row);
+      });
+
+      // Gyenge pontok elemző doboz ("Ezen még gyakorolj!")
+      const weaknessSection = document.getElementById('weaknessSection');
+      weakCategories.sort((a, b) => a.pct - b.pct);
+
+      if (weakCategories.length === 0) {
+        weaknessSection.className = 'rounded-2xl border-2 border-emerald-500 bg-emerald-50/90 p-5 shadow-sm';
+        weaknessSection.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shrink-0">★</div>
+            <div>
+              <h3 class="font-display font-bold text-base sm:text-lg text-emerald-950">Nincs hiányosság – Minden témakör 100%-os!</h3>
+              <p class="text-sm text-emerald-900 mt-1">
+                Gratulálok! Sem az évszámokban, sem a szövetségi rendszerekben, sem a háborús okok terén nem hibáztál.
+              </p>
+            </div>
+          </div>
+        `;
+      } else {
+        weaknessSection.className = 'rounded-2xl border-2 border-rose-500/80 bg-rose-50/90 p-5 shadow-sm space-y-3';
+        const itemsHtml = weakCategories
+          .map((wc) => {
+            const tipObj = CATEGORY_STUDY_TIPS[wc.name];
+            return `
+              <li class="bg-white/85 border border-rose-300 rounded-xl p-3.5 space-y-1">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="font-display font-bold text-sm text-rose-950">${wc.name}</span>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-600 text-white">
+                    Eredmény: ${wc.correct}/${wc.total} (${wc.pct}%)
+                  </span>
+                </div>
+                <p class="text-xs sm:text-sm text-parchment-900 leading-relaxed">
+                  <strong>Gyakorlási javaslat:</strong> ${tipObj ? tipObj.tip : 'Érdemes átnézni ennek a témakörnek a tankönyvi részleteit.'}
+                </p>
+              </li>
+            `;
+          })
+          .join('');
+
+        weaknessSection.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shrink-0">!</div>
+            <div>
+              <h3 class="font-display font-bold text-base sm:text-lg text-rose-950">Ezen még gyakorolj!</h3>
+              <p class="text-xs sm:text-sm text-rose-900 mt-0.5">
+                Az alábbi témakörökben fordultak elő hibák – ezeket érdemes átismételned a 11. osztályos történelem tankönyvből:
+              </p>
+            </div>
+          </div>
+          <ul class="space-y-2.5 pt-1">
+            ${itemsHtml}
+          </ul>
+        `;
+      }
+
+      // Összes kérdés visszanézése
+      const reviewList = document.getElementById('reviewQuestionsList');
+      reviewList.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      CITIES_DATA.forEach((city, index) => {
+        const ans = gameState.answers[city.id];
+        const isCorrect = ans?.isCorrect;
+        const userChoiceText = ans ? `${letters[ans.selectedIndex]}) ${city.options[ans.selectedIndex]}` : 'Nincs válasz';
+        const correctChoiceText = `${letters[city.correctIndex]}) ${city.options[city.correctIndex]}`;
+
+        const card = document.createElement('div');
+        card.className = `rounded-xl border p-3.5 text-sm ${
+          isCorrect ? 'bg-emerald-50/70 border-emerald-300' : 'bg-rose-50/70 border-rose-300'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <span class="font-display font-bold text-parchment-900">
+              ${index + 1}. ${city.name} <span class="font-sans font-normal text-xs text-parchment-800">(${city.category})</span>
+            </span>
+            <span class="text-xs font-bold px-2 py-0.5 rounded-full ${
+              isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+            }">
+              ${isCorrect ? '✓ Helyes' : '✕ Hibás'}
+            </span>
+          </div>
+          <p class="font-semibold text-parchment-900 mb-1.5">${city.question}</p>
+          <p class="text-xs text-parchment-800">
+            <strong>Te válaszod:</strong> ${userChoiceText}
+          </p>
+          ${
+            !isCorrect
+              ? `<p class="text-xs text-emerald-900 mt-0.5"><strong>Helyes válasz:</strong> ${correctChoiceText}</p>`
+              : ''
+          }
+          <p class="text-xs text-parchment-800/90 italic mt-1.5 border-t border-black/10 pt-1.5">${city.explanation}</p>
+        `;
+        reviewList.appendChild(card);
+      });
+
+      const modal = document.getElementById('summaryModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSummaryModal() {
+      const modal = document.getElementById('summaryModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /**
+     * Játék újraindítása
+     */
+    function restartGame() {
+      gameState.answers = {};
+      gameState.activeCityId = null;
+      closeSummaryModal();
+      closeQuestionModal();
+      renderMapAndPins();
+      showToast('A térkép alaphelyzetbe állt – sok sikert az új körhöz!');
+    }
+
+    /**
+     * Egyfájlos HTML letöltése a felhasználó gépére
+     */
+    function downloadSelfHtml() {
+      try {
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'nagy_magyarorszag_1914_kviz.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('A játék letöltése elindult (nagy_magyarorszag_1914_kviz.html)!');
+      } catch (err) {
+        showToast('A letöltéshez használd a böngésző Mentés másként (Ctrl+S) funkcióját.');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMessage');
+      document.getElementById('toastText').textContent = msg;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3200);
+    }
+
+    // Billentyűzet támogatás (ESC bezárja a modált, A/B/C/D kiválasztja a választ)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeQuestionModal();
+        closeSummaryModal();
+        return;
+      }
+
+      if (gameState.activeCityId && !gameState.answers[gameState.activeCityId]) {
+        const keyMap = { a: 0, b: 1, c: 2, d: 3, '1': 0, '2': 1, '3': 2, '4': 3 };
+        const idx = keyMap[e.key.toLowerCase()];
+        if (idx !== undefined) {
+          submitAnswer(gameState.activeCityId, idx);
+        }
+      }
+    });
+
+    // Indítás az oldal betöltésekor
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMapAndPins();
+    });
+  </script>
+</body>
+</html>
